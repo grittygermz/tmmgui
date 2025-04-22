@@ -13,6 +13,7 @@ import java.util.List;
  * creates a json file for existing jar to pick it up
  * streams the output from that jar onto the gui
  * checks current directory for configuration file for gui so that it will have default value
+ * disables button if all fields are not filled
  */
 public class Main {
 
@@ -20,6 +21,7 @@ public class Main {
         UIManager.setLookAndFeel(new FlatDarkLaf());
 
         JFrame jFrame = new JFrame();
+        jFrame.setTitle("Archiving");
         jFrame.setSize(700, 900);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container contentPane = jFrame.getContentPane();
@@ -42,9 +44,10 @@ public class Main {
     }
 
     private static JButton createExecuteButton(Container contentPane, OutputArea outputArea, GuiBuilder guiBuilder) {
-        JButton executeButton = guiBuilder.createButton("test", 100, 40);
+        JButton executeButton = guiBuilder.createButton("Execute!", 200, 40);
         ButtonAction buttonAction = new ButtonAction(contentPane, outputArea, executeButton);
-        buttonAction.setCommand("ping localhost");
+        //buttonAction.setCommand("ping localhost");
+        buttonAction.setCommand("");
         buttonAction.setFileName("jobInput.json");
         executeButton.addActionListener(buttonAction);
         return executeButton;
@@ -115,6 +118,14 @@ public class Main {
                     boolean allFilled = textFields.stream()
                             .noneMatch(tf -> tf.getText().trim().isEmpty());
                     executeButton.setEnabled(allFilled);
+
+                    if(textField.getText().trim().isEmpty()) {
+                        textField.setBackground(Color.white);
+                        //executeButton.putClientProperty("FlatLaf.style", "background: red;");
+                    } else {
+                        textField.setBackground(UIManager.getColor("TextField.background"));
+                        //executeButton.putClientProperty("FlatLaf.style", "background: none;");
+                    }
                 }
             });
         }
