@@ -30,7 +30,7 @@ public class GuiBuilder {
         return jPanel;
     }
 
-    public Container addInput(String label, InputValues inputValues) {
+    public JTextField addInput(String label, InputValues inputValues) {
         JPanel horizontalJPanel = createHorizontalJPanel();
         JTextField jTextField = getjTextField(label, inputValues);
         JLabel jLabel = getjLabel(label, jTextField);
@@ -40,7 +40,7 @@ public class GuiBuilder {
         horizontalJPanel.add(jTextField);
 
         container.add(horizontalJPanel);
-        return container;
+        return jTextField;
     }
 
     private static JLabel getjLabel(String label, JTextField jTextField) {

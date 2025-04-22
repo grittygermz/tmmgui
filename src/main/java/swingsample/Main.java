@@ -1,20 +1,13 @@
 package swingsample;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * creates a json file for existing jar to pick it up
@@ -34,11 +27,14 @@ public class Main {
 
         InputValues inputValues = loadDefaultValuesFromConfigFileIfExists("config.json");
 
-        addInputsToGui(guiBuilder, inputValues);
+        List<JTextField> jTextFields = addInputsToGui(guiBuilder, inputValues);
 
         OutputArea outputArea = createOutputArea();
 
         JButton executeButton = createExecuteButton(contentPane, outputArea, guiBuilder);
+
+        addDocumentListenerForButtonEnabling(jTextFields, executeButton);
+
 
         guiBuilder.addComponent(executeButton);
         guiBuilder.addComponent(outputArea.jScrollPane());
@@ -54,22 +50,27 @@ public class Main {
         return executeButton;
     }
 
-    private static void addInputsToGui(GuiBuilder guiBuilder, InputValues inputValues) {
-        guiBuilder.addInput("archiveFilesPath", inputValues);
-        guiBuilder.addInput("docType", inputValues);
-        guiBuilder.addInput("archiveId", inputValues);
-        guiBuilder.addInput("bookingCenter", inputValues);
-        guiBuilder.addInput("archivalSys", inputValues);
-        guiBuilder.addInput("date", inputValues);
-        guiBuilder.addInput("versionNum", inputValues);
-        guiBuilder.addInput("seqNumStart", inputValues);
-        guiBuilder.addInput("seqNumEnd", inputValues);
-        guiBuilder.addInput("maxFolderSizeGB", inputValues);
-        guiBuilder.addInput("maxDataFiles", inputValues);
-        guiBuilder.addInput("docId", inputValues);
-        guiBuilder.addInput("typeOfMailing", inputValues);
-        guiBuilder.addInput("title", inputValues);
-        guiBuilder.addInput("jobId", inputValues);
+    private static List<JTextField> addInputsToGui(GuiBuilder guiBuilder, InputValues inputValues) {
+
+        List<JTextField> jTextFields = new ArrayList<>();
+
+        jTextFields.add(guiBuilder.addInput("archiveFilesPath", inputValues));
+        jTextFields.add(guiBuilder.addInput("docType", inputValues));
+        jTextFields.add(guiBuilder.addInput("archiveId", inputValues));
+        jTextFields.add(guiBuilder.addInput("bookingCenter", inputValues));
+        jTextFields.add(guiBuilder.addInput("archivalSys", inputValues));
+        jTextFields.add(guiBuilder.addInput("date", inputValues));
+        jTextFields.add(guiBuilder.addInput("versionNum", inputValues));
+        jTextFields.add(guiBuilder.addInput("seqNumStart", inputValues));
+        jTextFields.add(guiBuilder.addInput("seqNumEnd", inputValues));
+        jTextFields.add(guiBuilder.addInput("maxFolderSizeGB", inputValues));
+        jTextFields.add(guiBuilder.addInput("maxDataFiles", inputValues));
+        jTextFields.add(guiBuilder.addInput("docId", inputValues));
+        jTextFields.add(guiBuilder.addInput("typeOfMailing", inputValues));
+        jTextFields.add(guiBuilder.addInput("title", inputValues));
+        jTextFields.add(guiBuilder.addInput("jobId", inputValues));
+
+        return jTextFields;
     }
 
     private static OutputArea createOutputArea() {
@@ -82,5 +83,40 @@ public class Main {
 
     static InputValues loadDefaultValuesFromConfigFileIfExists(String fileName) {
         return JsonHandler.readJsonFromFile(fileName, InputValues.class);
+    }
+
+    static void addDocumentListenerForButtonEnabling(List<JTextField> textFields, JButton executeButton) {
+
+        for (JTextField textField : textFields) {
+
+            //enable button if all fields are filled
+            boolean allFilled = textFields.stream()
+                    .noneMatch(tf -> tf.getText().trim().isEmpty());
+            executeButton.setEnabled(allFilled);
+
+            textField.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    toggleButton();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    toggleButton();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    toggleButton();
+                }
+
+                private void toggleButton() {
+                    // Enable button only if all text fields are filled
+                    boolean allFilled = textFields.stream()
+                            .noneMatch(tf -> tf.getText().trim().isEmpty());
+                    executeButton.setEnabled(allFilled);
+                }
+            });
+        }
     }
 }
