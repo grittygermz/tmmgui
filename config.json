@@ -1,0 +1,17 @@
+{
+  "archiveFilesPath": "field",
+  "docType": "field",
+  "archiveId":  "field",
+  "bookingCenter": "field",
+  "archivalSys":  "field",
+  "date": "field",
+  "versionNum":  1,
+  "seqNumStart": 1,
+  "seqNumEnd":  100,
+  "maxFolderSizeGB": 5,
+  "maxDataFiles":  3,
+  "docId": "field",
+  "typeOfMailing":  "field",
+  "title": "field",
+  "jobId":  "field"
+}
